@@ -1,0 +1,10 @@
+**/__pycache__
+.env
+.python-version
+__pycache__
+temp.py
+temp.*
+*.mkv
+test-env.sh
+todo.md
+**/**/*roadmap.md
