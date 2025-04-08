@@ -127,11 +127,11 @@ class NodeImagePre:
             "optional": {"mask": ("MASK",)}
         }
 
-    RETURN_TYPES = ("IMAGE", "MASK", "LATENT", "INT", "INT", "INT", "INT", "INT")
+    RETURN_TYPES = ("IMAGE", "MASK", "LATENT", "INT", "INT", "INT", "FLOAT", "INT", "INT")
     RETURN_NAMES = ("image_resize", "mask_resize", "empty_latent", "batch",
-                   "width_resize", "height_resize", "width_ups", "height_ups")
+                    "width_resize", "height_resize", "ups", "width_ups", "height_ups")
     FUNCTION = "execute"
-    CATEGORY = "Image/Transform" 
+    CATEGORY = "Image/Transform"
 
     def _process_size(self, w, h, target, divisor):
         scale = target / min(w, h)
@@ -159,8 +159,8 @@ class NodeImagePre:
         mask_out_resized = self._resize_tensor(mask, (resize_w, resize_h))
         latent = {"samples": torch.zeros((batch, 4, max(1, resize_h // 8), max(1, resize_w // 8)))}
         ups_w, ups_h = self._process_size(resize_w, resize_h, max(8, int(min(resize_w, resize_h) * ups)), 8)
-        return (image_out, mask_out_resized, latent, batch, resize_w, resize_h, ups_w, ups_h)
-
+        return (image_out, mask_out_resized, latent, batch,
+                resize_w, resize_h, ups, ups_w, ups_h)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------#    
 #Node Registration / 节点注册

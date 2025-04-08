@@ -58,9 +58,10 @@ This node package includes nodes for automatically processing sampler settings b
     *   `batch` (INT): Pass - through batch size.
     *   `width` (INT): Resized width (multiple of 16).
     *   `height` (INT): Resized height (multiple of 16).
+	*   `ups` (FLOAT): Upscaling factor.
     *   `width_ups` (INT): Upscaled width (multiple of 8).
     *   `height_ups` (INT): Upscaled height (multiple of 8).
-*   **Usage**: Inputting an 800x600 image with `shortside` = 768 and `ups` = 1.5 outputs: `image_resize`: 1024x768 image; `width_resize`/`height_resize`: 1024/768; `width_ups`/`height_ups`: 1536/1152.
+*   **Usage**: Inputting an 800x600 image with `shortside` = 768 and `ups` = 1.5 outputs: `image_resize`: 1024x768 image; `width_resize`/`height_resize`: 1024/768; `ups`=1.5; `width_ups`/`height_ups`: 1536/1152.
 ![image](https://github.com/KERRY-YUAN/ComfyUI_Simple_Executor/blob/main/Examples/NodeImagePre.png)
 
 ---
@@ -128,9 +129,10 @@ This node package includes nodes for automatically processing sampler settings b
     *   `batch` (INT): 透传的批次数量
     *   `width` (INT) 调整后宽度（16的倍数）
     *   `height` (INT): 调整后高度（16的倍数）
+	*   `ups` (FLOAT): 尺寸放大倍数
     *   `width_ups` (INT): 放大宽度（8的倍数）
     *   `height_ups` (INT): 放大高度（8的倍数）
-*   **使用**: 输入800x600图像，`shortside`=768，`ups`=1.5；输出：`image_resize`: 1024x768图像；`width_resize`/`height_resize`: 1024/768； `width_ups`/`height_ups`: 1536/1152
+*   **使用**: 输入800x600图像，`shortside`=768，`ups`=1.5；输出：`image_resize`: 1024x768图像；`width_resize`/`height_resize`: 1024/768； `ups`=1.5; `width_ups`/`height_ups`: 1536/1152
 
 ---
 
