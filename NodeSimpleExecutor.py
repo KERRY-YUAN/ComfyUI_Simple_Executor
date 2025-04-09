@@ -139,34 +139,55 @@ class NodeImagePre:
         new_h = max(divisor, ((round(h * scale) + divisor - 1) // divisor) * divisor)
         return new_w, new_h
 
-    def _resize_tensor(self, tensor, size):
-        if tensor is None:
-            return None
-        img_np = tensor[0].cpu().numpy()
-        img_np = np.clip(img_np * 255. if np.max(img_np) <= 1.0 else img_np, 0, 255).astype(np.uint8)
-        pil_mode = 'RGB' if img_np.ndim == 3 and img_np.shape[2] >= 3 else 'L'
-        img_np_proc = img_np[:, :, :3] if pil_mode == 'RGB' else img_np
-        img = Image.fromarray(img_np_proc, pil_mode)
-        img = img.resize(size, Image.Resampling.LANCZOS) if img.size != size else img
-        img_out_np = np.array(img).astype(np.float32) / 255.0
-        img_out_np = img_out_np[..., np.newaxis] if img_out_np.ndim == 2 else img_out_np
-        return torch.from_numpy(img_out_np).unsqueeze(0)
+    def _tensor2pil(self, tensor):
+        if tensor.dim() == 4:
+            tensor = tensor.squeeze(0)
+        return Image.fromarray(np.clip(tensor.numpy().squeeze()*255, 0, 255).astype(np.uint8))
+
+    def _pil2tensor(self, image):
+        return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0)
+
+    def _resize_image(self, tensor, size):
+        image = self._tensor2pil(tensor)
+        return self._pil2tensor(image.resize(size, Image.Resampling.LANCZOS))
+
+    def _resize_mask(self, tensor, size):
+        mask = self._tensor2pil(tensor).convert("L")
+        resized = mask.resize(size, Image.Resampling.NEAREST)
+        return torch.from_numpy(np.array(resized)).float().unsqueeze(0)
 
     def execute(self, image, shortside, batch, ups, mask=None):
         _, h, w, _ = image.shape
         resize_w, resize_h = self._process_size(w, h, shortside, 16)
-        image_out = self._resize_tensor(image, (resize_w, resize_h))
-        mask_out_resized = self._resize_tensor(mask, (resize_w, resize_h))
-        latent = {"samples": torch.zeros((batch, 4, max(1, resize_h // 8), max(1, resize_w // 8)))}
-        ups_w, ups_h = self._process_size(resize_w, resize_h, max(8, int(min(resize_w, resize_h) * ups)), 8)
-        return (image_out, mask_out_resized, latent, batch,
+
+        image_out = self._resize_image(image, (resize_w, resize_h))
+        
+        mask_out_resized = None
+        if mask is not None:
+            if mask.dim() == 2:
+                mask = mask.unsqueeze(0).unsqueeze(-1)
+            elif mask.dim() == 3:
+                mask = mask.unsqueeze(-1)
+            mask_out_resized = self._resize_mask(mask, (resize_w, resize_h))
+        
+        latent = {"samples": torch.zeros((
+            batch, 
+            4, 
+            max(1, resize_h // 8), 
+            max(1, resize_w // 8)
+        ))}
+        
+        ups_w, ups_h = self._process_size(resize_w, resize_h, 
+                     max(8, int(min(resize_w, resize_h) * ups)), 8)
+
+        return (image_out, mask_out_resized, latent, batch, 
                 resize_w, resize_h, ups, ups_w, ups_h)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------#    
 #Node Registration / 节点注册
 
 NODE_CLASS_MAPPINGS = {
+    "NodeAutoSampler": NodeAutoSampler,
     "NodeImageResize": NodeImageResize,
     "NodeImagePre": NodeImagePre,
-    "NodeAutoSampler": NodeAutoSampler,
 }

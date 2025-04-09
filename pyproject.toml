@@ -1,7 +1,7 @@
 [project]
 name = "simple_executor"
 description = "This node package contains automatic sampler setting according to model name in ComfyUI, adjusting image size according to specific constraints and some other nodes."
-version = "0.1.0"
+version = "0.1.1"
 license = {file = "LICENSE"}
 dependencies = ["torch>=1.12.0", "numpy>=1.21.0", "Pillow>=8.0.0"]
 
