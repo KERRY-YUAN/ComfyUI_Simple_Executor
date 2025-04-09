@@ -10,6 +10,6 @@ Repository = "https://github.com/KERRY-YUAN/ComfyUI_Simple_Executor"
 #  Used by Comfy Registry https://comfyregistry.org
 
 [tool.comfy]
-PublisherId = ""
+PublisherId = "kerry"
 DisplayName = "ComfyUI_Simple_Executor"
 Icon = ""
